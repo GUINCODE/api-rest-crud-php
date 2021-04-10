@@ -22,10 +22,21 @@ if($_SERVER['REQUEST_METHOD'] == 'PUT'){
     // On récupère les informations envoyées
     $donnees = json_decode(file_get_contents("php://input"));
     
-    if(!empty($donnees->id) && !empty($donnees->nom) && !empty($donnees->description) && !empty($donnees->prix) && !empty($donnees->categories_id)){
+    if(!empty($donnees->id) && !empty($donnees->nom) && !empty($donnees->description) && !empty($donnees->prix) && !empty($donnees->categories_id))
+    {
         // Ici on a reçu les données
-        // On hydrate notre objet
+        
         $produit->id = $donnees->id;
+       // On récupère le produit
+        $produit->lireUn();
+        //on verifie si le produit existe 
+        if($produit->nom == null){
+           http_response_code(404);
+            echo json_encode(["message" => " Le produit a modifier n'existe pas!!! La modification n'a pas été effectuée"]);    
+        }
+           else{  
+       // On hydrate notre objet
+        // $produit->id = $donnees->id;
         $produit->nom = $donnees->nom;
         $produit->description = $donnees->description;
         $produit->prix = $donnees->prix;
@@ -40,8 +51,13 @@ if($_SERVER['REQUEST_METHOD'] == 'PUT'){
             // Ici la création n'a pas fonctionné
             // On envoie un code 503
             http_response_code(503);
-            echo json_encode(["message" => "La modification n'a pas été effectuée"]);         
+            echo json_encode(["message" => "une erreur s'est produite, reessayer"]);         
         }
+   }
+      
+    }   else {
+         http_response_code(405);
+           echo json_encode(["message" => "tous les champs doivent etre rempli"]);
     }
 }else{
     // On gère l'erreur

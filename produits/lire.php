@@ -25,7 +25,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
     // On vérifie si on a au moins 1 produit
     if($stmt->rowCount() > 0){
         // On initialise un tableau associatif
-        $tableauProduits = [];
+    
         $tableauProduits['produits'] = [];
 
         // On parcourt les produits

@@ -17,38 +17,38 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
     $db = $database->getConnection();
 
     // On instancie les produits
-    $categories = new Categories($db);
+    $categorie = new Categories($db);
 
-    // On récupère les données
-    $stmt = $categories->lire();
-        
-      
-    // On vérifie si on a au moins 1 produit
-    if($stmt->rowCount() > 0){
-        
+    $donnees = json_decode(file_get_contents("php://input"));
 
-        // On parcourt les categories
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            extract($row);
-               
-            $categorie = [
+    if(!empty($donnees->id)){
+        $categorie->id = $donnees->id;
+
+        // On récupère le produit
+        $categorie->lireUn();
+
+        // On vérifie si le produit existe
+        if($categorie->nom != null){
+
+            $cat = [
+                "id" => $categorie->id,
+                "nom" => $categorie->nom,
+                "description" => $categorie->description,
                 
-                "nom" => $nom,
-                "description" => $description,
-                "created_at"=>$created_at
             ];
-           
-            $tableaucategories['categories'][]= $categorie; //on place les lignes de resultats dans un tableau associatif
+            // On envoie le code réponse 200 OK
+            http_response_code(200);
+
+            // On encode en json et on envoie
+            echo json_encode($cat);
+        }else{
+            // 404 Not found
+            http_response_code(404);
+         
+            echo json_encode(array("message" => "id not found for   categorie ."));
         }
-       
-
-        // On envoie le code réponse 200 OK
-        http_response_code(200);
-
-        // On encode en json et on envoie
-        echo json_encode($tableaucategories);
+        
     }
-
 }else{
     // On gère l'erreur
     http_response_code(405);

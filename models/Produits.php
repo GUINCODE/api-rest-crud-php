@@ -103,6 +103,30 @@ class Produits{
         $this->categories_id = $row['categories_id'];
         $this->categories_nom = $row['categories_nom'];
     }
+   /**
+     * lire produits by categories
+     *
+     * @return void
+     */
+    public function lireP_by_categorie(){
+        // On écrit la requête
+        $sql = "SELECT c.nom as categories_nom, p.id, p.nom, p.description, p.prix, p.categories_id, p.created_at FROM " . $this->table . " p LEFT JOIN categories c ON p.categories_id = c.id WHERE  p.categories_id= ? LIMIT 0,1000";
+
+        
+       // On prépare la requête
+        $query = $this->connexion->prepare($sql);
+
+         // On attache l'id
+        $query->bindParam(1, $this->categories_id);
+
+        // On exécute la requête
+        $query->execute();
+
+        // On retourne le résultat
+        return $query;
+
+    }
+
 
     /**
      * Supprimer un produit
@@ -163,5 +187,8 @@ class Produits{
         
         return false;
     }
+
+
+   
 
 }

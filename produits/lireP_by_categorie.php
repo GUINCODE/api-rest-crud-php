@@ -10,44 +10,53 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 if($_SERVER['REQUEST_METHOD'] == 'GET'){
     // On inclut les fichiers de configuration et d'accès aux données
     include_once '../config/Database.php';
-    include_once '../models/Categories.php';
+    include_once '../models/Produits.php';
 
     // On instancie la base de données
     $database = new Database();
     $db = $database->getConnection();
 
     // On instancie les produits
-    $categories = new Categories($db);
+    $produit = new Produits($db);
 
-    // On récupère les données
-    $stmt = $categories->lire();
-        
-      
+    $donnees = json_decode(file_get_contents("php://input"));
+
+
+
+     // On récupère les données
+     $produit->categories_id=$donnees->id;
+    $stmt = $produit->lireP_by_categorie();
+           
     // On vérifie si on a au moins 1 produit
     if($stmt->rowCount() > 0){
-        
+        // echo json_encode( $stmt);
+        //    die();
+        // On initialise un tableau associatif
+    
 
-        // On parcourt les categories
+        // On parcourt les produits
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             extract($row);
-               
-            $categorie = [
-                
+
+            $prod = [
+                "id" => $id,
                 "nom" => $nom,
                 "description" => $description,
-                "created_at"=>$created_at
+                "prix" => $prix,
+                "categories_id" => $categories_id,
+                "categories_nom" => $categories_nom
             ];
-           
-            $tableaucategories['categories'][]= $categorie; //on place les lignes de resultats dans un tableau associatif
+
+            $tableauProduits[$categories_nom][] = $prod;
         }
-       
 
         // On envoie le code réponse 200 OK
         http_response_code(200);
 
         // On encode en json et on envoie
-        echo json_encode($tableaucategories);
-    }
+        echo json_encode("categories");
+        echo json_encode( $tableauProduits);
+    }   else   echo json_encode("aucune categorie pour cet id");
 
 }else{
     // On gère l'erreur

@@ -22,7 +22,7 @@ class Categories{
     }
 
     /**
-     * Lecture des produits
+     * Lecture des categories
      *
      * @return void
      */
@@ -40,4 +40,32 @@ class Categories{
         return $query;
     }
 
+        /**
+     * find one categorie
+     *
+     * @return void
+     */
+    public function lireUn(){
+        // On écrit la requête
+        $sql = "SELECT id,nom,description FROM " . $this->table . " WHERE id = ? LIMIT 0,1";
+
+        // On prépare la requête
+        $query = $this->connexion->prepare( $sql );
+
+        // On attache l'id
+        $query->bindParam(1, $this->id);
+
+        // On exécute la requête
+        $query->execute();
+
+        // on récupère la ligne
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+
+        // On hydrate l'objet
+        $this->id=$row['id'];
+        $this->nom = $row['nom'];
+       $this->description = $row['description'];
+       
+    }
 }
+?>
